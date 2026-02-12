@@ -17,7 +17,13 @@ Services:
 - API docs: `http://localhost:8000/docs`
 - Flower: `http://localhost:5555`
 
-Before OAuth testing, set in `.env`:
+Instant mode (no setup):
+
+- Open `http://localhost:3000`
+- Paste any public GitHub profile URL
+- Click `Generate Portfolio`
+
+OAuth mode (optional), set in `.env`:
 
 - `GITHUB_CLIENT_ID`
 - `GITHUB_CLIENT_SECRET`

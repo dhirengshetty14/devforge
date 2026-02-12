@@ -23,6 +23,10 @@ Base path: `/api`
 - `GET /github/repositories`
 - `GET /github/repos/{id}`
 
+## Public (No Auth)
+
+- `POST /public/generate` (input: GitHub URL/username, output: generated portfolio URL)
+
 ## Portfolios
 
 - `GET /portfolios`
