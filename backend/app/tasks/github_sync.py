@@ -14,8 +14,8 @@ from app.core.security import decrypt_token
 from app.models.user import User
 from app.services.github import GitHubService
 from app.services.rate_limiter import RateLimiter
-from app.tasks.celery_app import celery_app
 from app.tasks.analysis import extract_skills
+from app.tasks.celery_app import celery_app
 
 settings = get_settings()
 

@@ -3,6 +3,7 @@ from redis.asyncio import Redis
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import encrypt_token
 from app.dependencies import get_current_user, get_db, get_redis
 from app.models.user import User
 from app.schemas.auth import (
@@ -14,7 +15,6 @@ from app.schemas.auth import (
 from app.services.auth import AuthService
 from app.services.github import GitHubService
 from app.services.rate_limiter import RateLimiter
-from app.core.security import encrypt_token
 
 router = APIRouter()
 

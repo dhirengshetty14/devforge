@@ -43,7 +43,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
   celery-worker:
     build:
@@ -58,7 +58,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: celery -A app.tasks.celery_app.celery_app worker --loglevel=info --concurrency=${CELERY_WORKER_CONCURRENCY:-4}
+    command: sh -c "alembic upgrade head && celery -A app.tasks.celery_app.celery_app worker --loglevel=info --concurrency=${CELERY_WORKER_CONCURRENCY:-4}"
 
   celery-beat:
     build:
@@ -73,7 +73,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: celery -A app.tasks.celery_app.celery_app beat --loglevel=info
+    command: sh -c "alembic upgrade head && celery -A app.tasks.celery_app.celery_app beat --loglevel=info"
 
   flower:
     build:
