@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import Field, field_validator
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -41,18 +41,13 @@ class Settings(BaseSettings):
     db_cache_ttl_hours: int = Field(default=24, alias="DB_CACHE_TTL_HOURS")
     redis_cache_prefix: str = Field(default="devforge:cache:", alias="REDIS_CACHE_PREFIX")
 
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"], alias="CORS_ORIGINS")
+    cors_origins: str = Field(default="http://localhost:3000,http://localhost:8000", alias="CORS_ORIGINS")
 
     enable_metrics: bool = Field(default=True, alias="ENABLE_METRICS")
 
-    @field_validator("cors_origins", mode="before")
-    @classmethod
-    def parse_origins(cls, value: str | list[str]) -> list[str]:
-        if isinstance(value, list):
-            return value
-        if isinstance(value, str):
-            return [item.strip() for item in value.split(",") if item.strip()]
-        return ["http://localhost:3000"]
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [item.strip() for item in self.cors_origins.split(",") if item.strip()]
 
 
 @lru_cache

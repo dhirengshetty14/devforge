@@ -18,3 +18,4 @@ frontend/node_modules/
 postgres_data/
 redis_data/
 *.log
+backend/celerybeat-schedule

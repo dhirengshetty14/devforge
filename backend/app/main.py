@@ -2,6 +2,7 @@ import os
 import time
 import uuid
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,11 +20,13 @@ from app.utils.metrics import REQUEST_COUNT, REQUEST_LATENCY, metrics_response
 settings = get_settings()
 configure_logging()
 logger = get_logger("app.main")
+generated_dir = Path("generated_portfolios")
+generated_dir.mkdir(parents=True, exist_ok=True)
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    os.makedirs("generated_portfolios", exist_ok=True)
+    os.makedirs(generated_dir, exist_ok=True)
     logger.info("startup_complete")
     yield
     await close_redis()
@@ -40,7 +43,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -115,4 +118,4 @@ async def generation_ws(websocket: WebSocket, job_id: str):
 
 
 app.include_router(api_router, prefix="/api")
-app.mount("/generated", StaticFiles(directory="generated_portfolios"), name="generated")
+app.mount("/generated", StaticFiles(directory=str(generated_dir)), name="generated")
