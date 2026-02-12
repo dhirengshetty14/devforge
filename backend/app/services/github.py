@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
 from sqlalchemy import select
@@ -196,3 +197,58 @@ class GitHubService:
         if isinstance(data, dict):
             return data
         return {}
+
+    async def get_public_user(self, username: str) -> dict[str, Any]:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            response = await client.get(
+                f"{GITHUB_API_BASE}/users/{username}",
+                headers={"Accept": "application/vnd.github+json"},
+            )
+            if response.status_code == 404:
+                raise GitHubAPIError("GitHub user not found")
+            response.raise_for_status()
+            return response.json()
+
+    async def get_public_repositories(self, username: str, max_repos: int = 120) -> list[dict[str, Any]]:
+        repositories: list[dict[str, Any]] = []
+        page = 1
+        per_page = 100
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            while len(repositories) < max_repos:
+                response = await client.get(
+                    f"{GITHUB_API_BASE}/users/{username}/repos",
+                    params={"sort": "updated", "per_page": per_page, "page": page},
+                    headers={"Accept": "application/vnd.github+json"},
+                )
+                if response.status_code == 404:
+                    raise GitHubAPIError("GitHub user repositories not found")
+                response.raise_for_status()
+                page_data = response.json()
+                if not isinstance(page_data, list) or not page_data:
+                    break
+                repositories.extend(page_data)
+                if len(page_data) < per_page:
+                    break
+                page += 1
+        return repositories[:max_repos]
+
+
+def parse_github_username(github_input: str) -> str:
+    raw = github_input.strip()
+    if not raw:
+        raise ValueError("GitHub URL or username is required")
+
+    if "github.com" not in raw and "/" not in raw:
+        return raw.lstrip("@")
+
+    if not raw.startswith("http"):
+        raw = f"https://{raw}"
+
+    parsed = urlparse(raw)
+    path_parts = [part for part in parsed.path.split("/") if part]
+    if parsed.netloc not in {"github.com", "www.github.com"} or not path_parts:
+        raise ValueError("Invalid GitHub profile URL")
+    username = path_parts[0].lstrip("@")
+    if not username:
+        raise ValueError("Invalid GitHub username")
+    return username
