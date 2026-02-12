@@ -17,6 +17,12 @@ Services:
 - API docs: `http://localhost:8000/docs`
 - Flower: `http://localhost:5555`
 
+Before OAuth testing, set in `.env`:
+
+- `GITHUB_CLIENT_ID`
+- `GITHUB_CLIENT_SECRET`
+- `GITHUB_REDIRECT_URI=http://localhost:3000/auth/callback`
+
 ## Repository Layout
 
 - `backend/`: FastAPI, SQLAlchemy, Celery, Redis integration
@@ -46,3 +52,10 @@ docker compose exec api ruff check .
 # Generate migration (inside backend container)
 docker compose exec api alembic revision --autogenerate -m "message"
 ```
+
+## Additional Docs
+
+- `docs/DEVELOPMENT.md`
+- `docs/DEPLOYMENT.md`
+- `docs/ARCHITECTURE.md`
+- `docs/API.md`
