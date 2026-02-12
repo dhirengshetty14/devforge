@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from sqlalchemy import BigInteger, Boolean, ForeignKey, Integer, String, Text, UniqueConstraint
@@ -12,7 +13,11 @@ class Repository(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "repositories"
     __table_args__ = (UniqueConstraint("github_id", name="uq_repositories_github_id"),)
 
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
     github_id: Mapped[int] = mapped_column(BigInteger, index=True, nullable=False)
     name: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)

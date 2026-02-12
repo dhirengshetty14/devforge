@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from sqlalchemy import ForeignKey, Integer, String
@@ -10,7 +11,11 @@ from app.models.mixins import UUIDPrimaryKeyMixin
 class Skill(UUIDPrimaryKeyMixin, Base):
     __tablename__ = "skills"
 
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     category: Mapped[str] = mapped_column(String(100), nullable=False)
     proficiency: Mapped[int] = mapped_column(Integer, default=1)

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint
@@ -11,7 +12,7 @@ class Commit(UUIDPrimaryKeyMixin, Base):
     __tablename__ = "commits"
     __table_args__ = (UniqueConstraint("sha", name="uq_commits_sha"),)
 
-    repository_id: Mapped[str] = mapped_column(
+    repository_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("repositories.id", ondelete="CASCADE"),
         index=True,
         nullable=False,

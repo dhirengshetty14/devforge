@@ -180,3 +180,19 @@ class GitHubService:
         if isinstance(data, list):
             return data
         return []
+
+    async def fetch_commit_detail(
+        self,
+        token: str,
+        owner: str,
+        repo: str,
+        sha: str,
+    ) -> dict[str, Any]:
+        data = await self._request(
+            "GET",
+            f"{GITHUB_API_BASE}/repos/{owner}/{repo}/commits/{sha}",
+            token,
+        )
+        if isinstance(data, dict):
+            return data
+        return {}

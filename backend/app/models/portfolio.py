@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, UniqueConstraint
@@ -15,7 +16,11 @@ class Portfolio(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         UniqueConstraint("custom_domain", name="uq_portfolios_custom_domain"),
     )
 
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
     subdomain: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
     custom_domain: Mapped[str | None] = mapped_column(String(255), nullable=True)
     template_id: Mapped[str] = mapped_column(String(100), default="minimal")

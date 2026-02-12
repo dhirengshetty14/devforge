@@ -1,6 +1,7 @@
+import uuid
 from datetime import datetime
 
-from sqlalchemy import ForeignKey, Index, Integer, String, Text
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -13,8 +14,8 @@ class GenerationJob(UUIDPrimaryKeyMixin, Base):
         Index("idx_jobs_status", "status", "started_at"),
     )
 
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    portfolio_id: Mapped[str] = mapped_column(
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    portfolio_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("portfolios.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -22,8 +23,8 @@ class GenerationJob(UUIDPrimaryKeyMixin, Base):
     progress_percentage: Mapped[int] = mapped_column(Integer, default=0)
     current_step: Mapped[str | None] = mapped_column(String(255), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
-    started_at: Mapped[datetime] = mapped_column(nullable=False)
-    completed_at: Mapped[datetime | None] = mapped_column(nullable=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     user = relationship("User", back_populates="generation_jobs")
     portfolio = relationship("Portfolio", back_populates="generation_jobs")
